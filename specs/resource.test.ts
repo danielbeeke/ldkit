@@ -38,12 +38,23 @@ const Director = {
   name: x.name,
 } as const;
 
+const Actor = {
+  "@type": x.Actor,
+  name: x.name,
+} as const;
+
 const Movie = {
   "@type": x.Movie,
   name: x.name,
   director: {
     "@id": x.director,
     "@context": Director,
+  },
+  actors: {
+    "@id": x.actor,
+    "@list": true,
+    "@optional": true,
+    "@multiple": true
   },
   released: {
     "@id": x.released,
@@ -59,10 +70,17 @@ const defaultStoreContent = ttl(`
   x:QuentinTarantino
     a x:Director ;
     x:name "Quentin Tarantino" .
+  x:MatthewModine
+    a x:Actor;
+    x:name "Matthew Modine" .
+  x:VincentDOnofrio
+    a x:Actor ;
+    x:name "Vincent D'Onofrio" .
   x:FullMetalJacket
-    a x:Movie;
+    a x:Movie ;
     x:name "Full Metal Jacket" ;
-    x:director x:StanleyKubrick .
+    x:director x:StanleyKubrick ;
+    x:actor ( "Matthew Modine" "Vincent D'Onofrio" ) .
   x:Shining
     a x:Movie;
     x:name "Shining" ;
@@ -81,6 +99,15 @@ const createDirector = ($id: string, name: string) => ({
 
 const Tarantino = createDirector("QuentinTarantino", "Quentin Tarantino");
 const Kubrick = createDirector("StanleyKubrick", "Stanley Kubrick");
+
+const createActor = ($id: string, name: string) => ({
+  $id: x[$id],
+  $type: [x.Actor],
+  name,
+});
+
+const Modine = createActor("MatthewModine", "Matthew Modine")
+const Donofrio = createActor("VincentDOnofrio", "Vincent D'Onofrio")
 
 const engine = new Comunica();
 const _ = new DataFactory();
@@ -112,6 +139,15 @@ Deno.test("Resource / Get many resources", async () => {
   assertContainsEqual(result, Tarantino);
   assertContainsEqual(result, Kubrick);
 });
+
+
+Deno.test("Resource / Get many resources", { only: true }, async () => {
+  const { movies } = init();
+  const result = await movies.find();
+
+  console.log(result)
+});
+
 
 Deno.test("Resource / Get resource by IRI", async () => {
   const { directors } = init();

@@ -71,19 +71,33 @@ export class QueryBuilder {
       Object.keys(properties).forEach((prop, index) => {
         const property = properties[prop];
         const isOptional = property["@optional"];
+
         if (!includeOptional && isOptional) {
           return;
         }
         if (wrapOptional && isOptional) {
           conditions.push($`\nOPTIONAL {`);
         }
-        conditions.push(
-          this.df.quad(
-            this.df.variable!(varPrefix),
-            this.df.namedNode(property["@id"]),
-            this.df.variable!(`${varPrefix}_${index}`),
-          ),
-        );
+
+        if (!property['@list']) {
+          conditions.push(
+            this.df.quad(
+              this.df.variable!(varPrefix),
+              this.df.namedNode(property["@id"]),
+              this.df.variable!(`${varPrefix}_${index}`),
+            ),
+          );  
+        }
+
+        if (property['@list']) {
+          if (wrapOptional) {
+            conditions.push($` ${this.df.variable!(`${varPrefix}`)} ${this.df.namedNode(property["@id"])}/rdf:rest*/rdf:first ${this.df.variable!(`${varPrefix}_${index}`)} .`);
+          }
+          else {
+            conditions.push($` ${this.df.variable!(`${varPrefix}`)} ${this.df.namedNode(property["@id"])} ${this.df.variable!(`${varPrefix}_${index}`)} .`);
+          }
+        }
+
         if (typeof property["@context"] === "object") {
           populateConditionsRecursive(
             property["@context"] as Schema,
@@ -97,6 +111,7 @@ export class QueryBuilder {
     };
 
     populateConditionsRecursive(this.schema, mainVar);
+
     return conditions;
   }
 

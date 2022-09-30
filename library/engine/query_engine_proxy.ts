@@ -29,6 +29,7 @@ export class QueryEngineProxy {
       this.context,
     ) as unknown as AsyncIterator<RDF.Quad>;
     const quads = await (quadStream.toArray());
+    // console.log(JSON.stringify(quads))
     return quadsToGraph(quads);
   }
 

@@ -27,6 +27,7 @@ export type Property = {
   "@context"?: Schema;
   "@optional"?: true;
   "@array"?: true;
+  "@list"?: true;
   "@multilang"?: true;
 };
 

@@ -33,6 +33,7 @@ export const expandSchema = (schemaPrototype: SchemaPrototype) => {
       "@id",
       "@type",
       "@array",
+      "@list",
       "@optional",
       "@multilang",
     ] as const;

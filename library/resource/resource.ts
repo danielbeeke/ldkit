@@ -52,6 +52,7 @@ export class Resource<S extends SchemaPrototype, I = SchemaInterface<S>> {
 
   async find(where?: string | RDF.Quad[], limit?: number) {
     const q = this.queryBuilder.getQuery(where, limit);
+    console.log(q)
     // TODO: console.log(q);
     const graph = await this.engine.queryGraph(q);
     return this.decode(graph);

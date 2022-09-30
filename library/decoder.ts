@@ -163,6 +163,12 @@ class Decoder {
       }
     }
 
+    if (property["@list"]) {
+      return terms.map(term => {
+        return this.decodeTerm(term);
+      })
+    }
+
     if (property["@array"]) {
       if (property["@context"]) {
         // Collection of resources specified by sub schema

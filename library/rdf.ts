@@ -58,6 +58,7 @@ export const quadsToGraph = (quads: Quad[]) => {
 
     termArray.push(quad.object);
   }
+
   return graph;
 };
 
